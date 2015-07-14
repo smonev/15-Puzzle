@@ -1,0 +1,44 @@
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.board {
+  order: 1;
+  padding: 5px;
+  outline: none;
+  position: relative;
+}
+
+.board .cell, .tile {
+  user-select: none;
+  cursor: default;
+}
+
+.cell, .tile {
+  line-height: 1.5em;
+  display: inline-block;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  /*border-radius: 10%;*/
+  color: #000;
+  background-color: #FFFFFF;
+  z-index: 110;
+}
+
+.tile {
+  position: absolute;
+  cursor: pointer;
+  background: purple;
+  color: white;  
+}
+
+.hovered {
+  border: 1px dashed yellow;
+}
+

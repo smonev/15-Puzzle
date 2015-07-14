@@ -1,0 +1,56 @@
+{
+  "name": "esnext-quickstart",
+  "version": "1.0.0",
+  "description": "ESNext quickstart",
+  "engines": {
+    "iojs": ">=1.0",
+    "node": ">=0.10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nkbt/esnext-quickstart.git"
+  },
+  "author": "Nik Butenko <nik@butenko.me> (http://butenko.me/)",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js",
+    "build": "rm -rf public && cp -pr src/static/ public && webpack",
+    "lint": "eslint ./spec ./src ./*.js",
+    "test": "npm run lint && node ./node_modules/karma/bin/karma start ./karma.conf.js --single-run",
+    "test:dev": "node ./node_modules/karma/bin/karma start ./karma.conf.js --no-single-run --auto-watch",
+    "test:cov": "rm -rf ./coverage && mkdir -p ./coverage && node ./node_modules/karma/bin/karma start ./karma.conf.js --single-run --reporters coverage"
+  },
+  "dependencies": {
+    "babel-core": "^5.5.8",
+    "babel-loader": "^5.1.4",
+    "css-loader": "^0.14.5",
+    "eslint": "^0.23.0",
+    "eslint-loader": "^0.14.0",
+    "eslint-plugin-react": "^2.5.2",
+    "file-loader": "^0.8.4",
+    "isparta-loader": "^0.2.0",
+    "jasmine": "^2.3.1",
+    "karma": "^0.12.36",
+    "karma-chrome-launcher": "^0.1.12",
+    "karma-coverage": "^0.4.2",
+    "karma-jasmine": "^0.3.5",
+    "karma-nyan-reporter": "0.0.60",
+    "karma-webpack": "^1.5.1",
+    "lodash": "^3.9.3",
+    "react": "^0.13.3",
+    "react-hot-loader": "^1.2.7",
+    "react-jasmine-matchers": "^2.0.0",
+    "sorted-object": "^1.0.0",
+    "style-loader": "^0.12.3",
+    "url-loader": "^0.5.6",
+    "webpack": "^1.9.11",
+    "webpack-dev-server": "^1.9.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^3.1.23",
+    "classnames": "^2.1.3",
+    "eslint": "^0.23.0",
+    "node-sass": "^3.2.0",
+    "sass-loader": "^1.0.2"
+  }
+}
