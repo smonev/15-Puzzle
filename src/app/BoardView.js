@@ -16,28 +16,42 @@ export default class BoardView extends React.Component {
   }
 
   onBoardTouchOrMoveEnd(event, domElement, fromTile) {
-    let hovered;
     const that = this;
     this.state.board.checkForCollision(domElement.props.tile, function(toTile) {
       let newTiles = this.move(fromTile, toTile);
-      newTiles = (typeof newTiles !== 'undefined') ? newTiles : that.state.board.tiles;
+      if (typeof newTiles !== 'undefined') {
+        that.state.board.tiles = newTiles;
+        that.setState({
+          board: that.state.board,
+        });
 
-      that.state.board.tiles = newTiles;
-      that.setState({board: that.state.board});
+        if (this.hasWon()) {
+          that.setState({
+            board: that.state.board,
+            hasWon: true,
+          });
+
+          that.state.level = that.state.level + 1;
+          newTiles = this.initializeLevel(that.state.level);
+
+          that.state.board.tiles = newTiles;
+          that.setState({
+            board: that.state.board,
+            level: that.state.level,
+          });
+        }
+      }
     });
 
-    hovered = document.querySelector('.hovered');
+    let hovered = document.querySelector('.hovered');
     if (hovered !== null) {
       hovered.classList.remove('hovered');
     }
   }
 
   onHoverWhileMoving(tyle) {
-    let hovered;
-    let newHovered;
-
-    newHovered = document.querySelector('.position_' + tyle.row + '_' + tyle.column);
-    hovered = document.querySelector('.hovered');
+    let newHovered = document.querySelector('.position_' + tyle.row + '_' + tyle.column);
+    let hovered = document.querySelector('.hovered');
 
     if ((hovered !== null) && (newHovered !== null)) {
       if (hovered !== newHovered) {
@@ -96,7 +110,7 @@ export default class BoardView extends React.Component {
     super();
     this.state = {
       board: new Board(),
+      level: 1,
     };
   }
-
 }
