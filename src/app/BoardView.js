@@ -1,4 +1,5 @@
 import React from 'react';
+
 import Board from './Board';
 import Cell from './Cell';
 import TileView from './TileView';
@@ -8,38 +9,62 @@ require('../sass/index.scss');
 export default class BoardView extends React.Component {
 
   onBoardMouseMove(event, domElement) {
+    this.setState({
+      resetTile: null,
+    });
+
     this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
   }
 
   onBoardTouchMove(event, domElement) {
+    this.setState({
+      resetTile: null,
+    });
+
     this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
   }
 
   onBoardTouchOrMoveEnd(event, domElement, fromTile) {
     const that = this;
+
     this.state.board.checkForCollision(domElement.props.tile, function(toTile) {
-      let newTiles = this.move(fromTile, toTile);
+      let newTiles;
+      if (typeof toTile !== 'undefined') {
+        newTiles = this.move(fromTile, toTile);
+        that.setState({
+          resetTile: null,
+        });
+      } else {
+        that.setState({
+          resetTile: fromTile,
+        });
+      }
+
       if (typeof newTiles !== 'undefined') {
         that.state.board.tiles = newTiles;
         that.setState({
           board: that.state.board,
+          fromTile: fromTile,
+          toTile: toTile,
         });
 
-        if (this.hasWon()) {
+        if (that.state.board.hasWon()) {
           that.setState({
-            board: that.state.board,
             hasWon: true,
           });
 
           that.state.level = that.state.level + 1;
-          newTiles = this.initializeLevel(that.state.level);
+          that.state.board.tiles = that.state.board.initializeLevel(that.state.level);
 
-          that.state.board.tiles = newTiles;
           that.setState({
             board: that.state.board,
             level: that.state.level,
           });
         }
+      } else {
+        that.setState({
+          resetTile: fromTile,
+        });
       }
     });
 
@@ -49,28 +74,36 @@ export default class BoardView extends React.Component {
     }
   }
 
-  onHoverWhileMoving(tyle) {
-    let newHovered = document.querySelector('.position_' + tyle.row + '_' + tyle.column);
-    let hovered = document.querySelector('.hovered');
+  onHoverWhileMoving(tile) {
+    if (typeof tile !== 'undefined') {
+      let newHovered = document.querySelector('.position_' + tile.row + '_' + tile.column);
+      let hovered = document.querySelector('.hovered');
 
-    if ((hovered !== null) && (newHovered !== null)) {
-      if (hovered !== newHovered) {
+      if ((hovered !== null) && (newHovered !== null)) {
+        if (hovered !== newHovered) {
+          hovered.classList.remove('hovered');
+          newHovered.classList.add('hovered');
+        }
+      } else if (hovered !== null) {
         hovered.classList.remove('hovered');
+      } else if (newHovered !== null) {
         newHovered.classList.add('hovered');
       }
-    } else if (hovered !== null) {
-      hovered.classList.remove('hovered');
-    } else if (newHovered !== null) {
-      newHovered.classList.add('hovered');
     }
+  }
+
+  getEndValue(left, horizontal, vertical) {
+    return {
+      horizontal: horizontal,
+      vertical: vertical,
+      leftValue: left,
+      bla: {val: left},
+      config: [500, 20],
+    };
   }
 
   render() {
     const that = this;
-
-    if (!this.state) {
-      return <div />;
-    }
 
     const cells = this.state.board.cells.map(function(row, i) {
       return (
@@ -87,17 +120,23 @@ export default class BoardView extends React.Component {
     const tiles = this.state.board.tiles.filter(function(tile) {
       return tile.value !== 0;
     }).map(function(tile) {
-      const tileMoving = false;
+      let animatingTile;
+      if (tile === that.state.resetTile) {
+        animatingTile = tile;
+      }
+
       return (
-          <TileView tile={tile}
-            onBoardMouseMove={that.onBoardMouseMove.bind(that)}
-            onBoardTouchMove={that.onBoardTouchMove.bind(that)}
-            onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)}
-            tileMoving={tileMoving}
-            key={tile.id}
-            width={that.state.board.CELL_WIDTH} />
+        <TileView tile={tile}
+          animatingTile={animatingTile}
+          onBoardMouseMove={that.onBoardMouseMove.bind(that)}
+          onBoardTouchMove={that.onBoardTouchMove.bind(that)}
+          onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)}
+          tileMoving={false}
+          key={tile.id}
+          width={that.state.board.CELL_WIDTH} />
       );
     });
+
     return (
       <div className="board" tabIndex="1">
         {cells}

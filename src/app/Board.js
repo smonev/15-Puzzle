@@ -33,7 +33,7 @@ export default class Board {
     let fromTile;
     let whereTo;
 
-    while (movesCount < (level * 4)) {
+    while (movesCount < (level * 10)) {
       whereTo = this.getRandomInt(1, 4);
 
       if (whereTo === 1) {
@@ -130,6 +130,10 @@ export default class Board {
         break;
       }
     }
+
+    if (!detected) {
+      callback.call(this);
+    }
   }
 
   move(fromTile, toTile) {
@@ -153,11 +157,6 @@ export default class Board {
     });
 
     return won;
-  }
-
-  hasLost() {
-    let canMove = true;
-    return !canMove;
   }
 }
 
