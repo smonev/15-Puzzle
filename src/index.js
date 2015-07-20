@@ -9,6 +9,9 @@ function onDeviceReady() {
   }
   window.deviceReadyFired = true;
 
+  let injectTapEventPlugin = require('react-tap-event-plugin');
+  injectTapEventPlugin();
+
   React.initializeTouchEvents(true);
   React.render(<BoardView />, document.getElementById('boardDiv'));
 }
