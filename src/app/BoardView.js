@@ -2,6 +2,7 @@ import React from 'react';
 
 import Board from './Board';
 import Cell from './Cell';
+import LevelView from './Level';
 import TileView from './TileView';
 
 require('../sass/index.scss');
@@ -51,6 +52,7 @@ export default class BoardView extends React.Component {
         if (that.state.board.hasWon()) {
           that.setState({
             hasWon: true,
+            showLevel: true,
           });
 
           that.state.level = that.state.level + 1;
@@ -92,19 +94,14 @@ export default class BoardView extends React.Component {
     }
   }
 
-  getEndValue(left, horizontal, vertical) {
-    return {
-      horizontal: horizontal,
-      vertical: vertical,
-      leftValue: left,
-      bla: {val: left},
-      config: [500, 20],
-    };
+  onLevelClick() {
+    this.setState({
+      showLevel: !this.state.showLevel,
+    });
   }
 
   render() {
     const that = this;
-
     const cells = this.state.board.cells.map(function(row, i) {
       return (
               <div key={i}>
@@ -139,6 +136,13 @@ export default class BoardView extends React.Component {
 
     return (
       <div className="board" tabIndex="1">
+        <LevelView
+          level={that.state.level}
+          tileWidth={that.state.board.CELL_WIDTH}
+          hasWon={that.state.hasWon}
+          showLevel={that.state.showLevel}
+          onLevelClick={that.onLevelClick.bind(that)}
+        />
         {cells}
         {tiles}
       </div>
@@ -150,6 +154,7 @@ export default class BoardView extends React.Component {
     this.state = {
       board: new Board(),
       level: 1,
+      showLevel: false,
     };
   }
 }
