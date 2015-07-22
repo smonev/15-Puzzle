@@ -94,6 +94,10 @@ export default class BoardView extends React.Component {
     }
   }
 
+  componentDidMount() {
+    document.addEventListener('mousemove', this.mousemove.bind(this));
+  }
+
   onLevelClick() {
     this.setState({
       showLevel: !this.state.showLevel,
@@ -130,6 +134,7 @@ export default class BoardView extends React.Component {
           onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)}
           tileMoving={false}
           key={tile.id}
+          mousemoveEvent={that.state.mousemoveEvent}
           width={that.state.board.CELL_WIDTH} />
       );
     });
@@ -149,12 +154,20 @@ export default class BoardView extends React.Component {
     );
   }
 
+  mousemove(event) {
+    event.preventDefault();
+    this.setState({
+      mousemoveEvent: event, // Whole event? hmm
+    });
+  }
+
   constructor() {
     super();
     this.state = {
       board: new Board(),
       level: 1,
       showLevel: false,
+      mousemoveEvent: null,
     };
   }
 }

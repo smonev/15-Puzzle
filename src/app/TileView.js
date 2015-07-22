@@ -9,6 +9,7 @@ export default class TileView extends React.Component {
     tileMoving: React.PropTypes.bool.isRequired,
     tile: React.PropTypes.any.isRequired,
     animatingTile: React.PropTypes.any,
+    mousemoveEvent: React.PropTypes.any,
     width: React.PropTypes.number.isRequired,
     onBoardMouseMove: React.PropTypes.func.isRequired,
     onBoardTouchMove: React.PropTypes.func.isRequired,
@@ -35,8 +36,8 @@ export default class TileView extends React.Component {
     const TABLE_FULL_HEIGHT = (4 * TILE_FULL_WIDTH);
 
     if (this.state.tileMoving) {
-      left = this.state.startX;
-      top = this.state.startY;
+      left = this.props.mousemoveEvent.clientX - this.dom.offsetLeft - this.board.offsetLeft - this.props.width / 2;
+      top = this.props.mousemoveEvent.clientY - this.dom.offsetTop - this.board.offsetTop - this.props.width / 2;
     } else {
       left = tile.column * TILE_FULL_WIDTH;
       top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
@@ -119,6 +120,7 @@ export default class TileView extends React.Component {
   }
 
   handleTileMouseDown() {
+    this.dom = this.dom ? this.dom : React.findDOMNode(this);
     this.setState({
         tileMouseDown: true,
         startTile: this.props.tile,
@@ -163,12 +165,8 @@ export default class TileView extends React.Component {
       return;
     }
 
-    let dom = React.findDOMNode(this);
-
     this.setState({
         tileMoving: true,
-        startX: event.clientX - dom.offsetLeft - this.board.offsetLeft - this.props.width / 2,
-        startY: event.clientY - dom.offsetTop - this.board.offsetTop - this.props.width / 2,
     });
 
     this.props.tile.startX = event.clientX - this.board.offsetLeft - this.props.width / 2;
