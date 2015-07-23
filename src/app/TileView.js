@@ -58,9 +58,9 @@ export default class TileView extends React.Component {
 
     classArray.push('tile' + this.props.tile.value);
     classArray.push('position_' + tile.row + '_' + tile.column);
-    // if (tile.value === '') {
-    //   classArray.push('empty');
-    // }
+    if (tile.value === '') {
+      classArray.push('empty');
+    }
 
     let classes = classNames.apply(null, classArray);
     let margin = Math.round(this.props.width / 8);
@@ -100,7 +100,7 @@ export default class TileView extends React.Component {
                 width: this.props.width + 'px',
                 height: this.props.width + 'px',
                 margin: margin + 'px',
-                //color: '#' + Math.random().toString().substring(2, 8),
+                // color: '#' + Math.random().toString().substring(2, 8),
                 transform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
                 zIndex: this.state.tileMoving ? 1100 : 1,
               }}
