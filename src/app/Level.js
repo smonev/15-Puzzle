@@ -8,6 +8,7 @@ export default class LevelView extends React.Component {
     level: React.PropTypes.number.isRequired,
     hasWon: React.PropTypes.bool.isRequired,
     tileWidth: React.PropTypes.number.isRequired,
+    onLevelClick: React.PropTypes.func.isRequired,
   }
 
   render() {

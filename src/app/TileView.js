@@ -6,14 +6,37 @@ let classNames = require('classnames');
 export default class TileView extends React.Component {
 
   static propTypes = {
-    tileMoving: React.PropTypes.bool.isRequired,
     tile: React.PropTypes.any.isRequired,
-    animatingTile: React.PropTypes.any,
+    resetTile: React.PropTypes.any,
     mousemoveEvent: React.PropTypes.any,
     width: React.PropTypes.number.isRequired,
-    onBoardMouseMove: React.PropTypes.func.isRequired,
-    onBoardTouchMove: React.PropTypes.func.isRequired,
+    onBoardTouchOrMouseMove: React.PropTypes.func.isRequired,
     onBoardTouchOrMoveEnd: React.PropTypes.func.isRequired,
+  }
+
+  componentDidMount() {
+    this.dom = this.dom ? this.dom : React.findDOMNode(this);
+  }
+
+  shouldComponentUpdate(newProps, newState) {
+    if (
+        (!this.state.tileMoving) &&
+
+        (this.props.tile.value !== '') &&
+        (newProps.tile.value !== '') &&
+
+        (this.props.tile.value === newProps.tile.value) &&
+        (this.props.tile.row === newProps.tile.row) &&
+        (this.props.tile.column === newProps.tile.column) &&
+
+        (this.props.width === newProps.width) &&
+        (this.state.tileMoving === newState.tileMoving) &&
+        (this.state.tileMouseDown === newState.tileMouseDown)
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   render() {
@@ -30,22 +53,29 @@ export default class TileView extends React.Component {
     let tileCaption = tile.value !== 'a' ? tile.value : '';
     let margin = Math.round(this.props.width / 8);
 
-    let left;
-    let top;
     const TILE_FULL_WIDTH = (this.props.width + margin * 2);
     const TABLE_FULL_HEIGHT = (4 * TILE_FULL_WIDTH);
 
+    let left = tile.column * TILE_FULL_WIDTH;
+    let top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
+
     if (this.state.tileMoving) {
-      left = this.props.mousemoveEvent.clientX - this.dom.offsetLeft - this.board.offsetLeft - this.props.width / 2;
-      top = this.props.mousemoveEvent.clientY - this.dom.offsetTop - this.board.offsetTop - this.props.width / 2;
-    } else {
-      left = tile.column * TILE_FULL_WIDTH;
-      top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
+      if (!this.props.mousemoveEvent) {
+        // console.log('hmm'); // we should never end here
+        left = tile.column * TILE_FULL_WIDTH;
+        top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
+      } else {
+        let touchOrMouseClientX = this.props.mousemoveEvent.touches ? this.props.mousemoveEvent.touches[0].clientX : this.props.mousemoveEvent.clientX;
+        let touchOrMouseClientY = this.props.mousemoveEvent.touches ? this.props.mousemoveEvent.touches[0].clientY : this.props.mousemoveEvent.clientY;
+
+        left = touchOrMouseClientX - this.dom.offsetLeft - this.board.offsetLeft - this.props.width / 2;
+        top = touchOrMouseClientY - this.dom.offsetTop - this.board.offsetTop - this.props.width / 2;
+      }
     }
 
     let endValue = this.endValue.bind(this,
-     this.props.animatingTile ? this.props.animatingTile.left + (2 * margin * this.props.animatingTile.column) : left,
-     this.props.animatingTile ? this.props.animatingTile.top - TABLE_FULL_HEIGHT + (2 * margin * this.props.animatingTile.row) : top
+     this.props.resetTile ? this.props.resetTile.left + (2 * margin * this.props.resetTile.column) : left,
+     this.props.resetTile ? this.props.resetTile.top - TABLE_FULL_HEIGHT + (2 * margin * this.props.resetTile.row) : top
     );
 
     return (
@@ -58,15 +88,19 @@ export default class TileView extends React.Component {
                 width: this.props.width + 'px',
                 height: this.props.width + 'px',
                 margin: margin + 'px',
+                // color: '#' + Math.random().toString().substring(2, 8),
                 transform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
                 zIndex: this.state.tileMoving ? 1100 : 1,
               }}
-              onMouseDown={this.handleTileMouseDown.bind(this)}
-              onMouseUp={this.handleTileMouseUp.bind(this)}
-              onMouseMove={this.handleTileMouseMove.bind(this)}
-              onTouchStart={this.handleTileTouchStart.bind(this)}
-              onTouchEnd={this.handleTileTouchEnd.bind(this)}
-              onTouchMove={this.handleTileTouchMove.bind(this)}
+              onMouseDown={this.handleTileTouchOrMoveStart.bind(this)}
+              onTouchStart={this.handleTileTouchOrMoveStart.bind(this)}
+
+              onMouseMove={this.handleTileTouchOrMouseMove.bind(this)}
+              onTouchMove={this.handleTileTouchOrMouseMove.bind(this)}
+
+              onMouseUp={this.handleTileTouchOrMoveEnd.bind(this)}
+              onTouchEnd={this.handleTileTouchOrMoveEnd.bind(this)}
+
               key={tile.id}>{tileCaption}
               </span>
             );
@@ -95,83 +129,50 @@ export default class TileView extends React.Component {
     this.state = {
       tileMouseDown: false,
       tileMoving: false,
-      startX: 0,
-      startY: 0,
-      startTile: null,
     };
 
     this.board = document.querySelectorAll('#boardDiv')[0];
   }
 
-  handleTileTouchStart() {
+  handleTileTouchOrMoveStart() {
     this.setState({
         tileMouseDown: true,
-        startTile: this.props.tile,
     });
   }
 
-  handleTileTouchEnd(event) {
+  handleTileTouchOrMoveEnd(event) {
     this.setState({
         tileMoving: false,
         tileMouseDown: false,
     });
 
-    this.props.onBoardTouchOrMoveEnd(event, this, this.state.startTile);
+    this.props.onBoardTouchOrMoveEnd(event, this, this.props.tile);
   }
 
-  handleTileMouseDown() {
-    this.dom = this.dom ? this.dom : React.findDOMNode(this);
-    this.setState({
-        tileMouseDown: true,
-        startTile: this.props.tile,
-    });
-  }
-
-  handleTileMouseUp(event) {
-    this.setState({
-        tileMoving: false,
-        tileMouseDown: false,
-    });
-
-    this.props.onBoardTouchOrMoveEnd(event, this, this.state.startTile);
-  }
-
-  handleTileTouchMove(event) {
+  handleTileTouchOrMouseMove(event) {
     event.preventDefault();
 
+    let handleEvent = true;
+
     if (!this.state.tileMouseDown) {
-      return false;
+      handleEvent = false;
     }
 
-    if (event.changedTouches.length !== 1) {
-      return false;
+    if ((typeof event.changedTouches !== 'undefined') && (event.changedTouches.length !== 1)) {
+      handleEvent = false;
     }
 
-    let dom = React.findDOMNode(this);
-    this.setState({
-        tileMoving: true,
-        startX: event.touches[0].clientX - dom.offsetLeft - this.board.offsetLeft - this.props.width / 2,
-        startY: event.touches[0].clientY - dom.offsetTop - this.board.offsetTop - this.props.width / 2,
-    });
+    if (handleEvent) {
+      this.setState({
+          tileMoving: true,
+      });
 
-    this.props.tile.startX = event.touches[0].clientX - this.board.offsetLeft - this.props.width / 2;
-    this.props.tile.startY = event.touches[0].clientY - this.board.offsetTop - this.props.width / 2;
+      let touchOrMouseClientX = event.touches ? event.touches[0].clientX : event.clientX;
+      let touchOrMouseClientY = event.touches ? event.touches[0].clientY : event.clientY;
 
-    this.props.onBoardTouchMove(event, this);
+      this.props.tile.startX = touchOrMouseClientX - this.board.offsetLeft - this.props.width / 2;
+      this.props.tile.startY = touchOrMouseClientY - this.board.offsetTop - this.props.width / 2;
+      this.props.onBoardTouchOrMouseMove(event, this);
+    }
   }
-
-  handleTileMouseMove(event) {
-    if (!this.state.tileMouseDown) {
-      return;
-    }
-
-    this.setState({
-        tileMoving: true,
-    });
-
-    this.props.tile.startX = event.clientX - this.board.offsetLeft - this.props.width / 2;
-    this.props.tile.startY = event.clientY - this.board.offsetTop - this.props.width / 2;
-
-    this.props.onBoardMouseMove(event, this);
-  };
 }

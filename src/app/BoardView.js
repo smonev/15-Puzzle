@@ -9,18 +9,22 @@ require('../sass/index.scss');
 
 export default class BoardView extends React.Component {
 
-  onBoardMouseMove(event, domElement) {
-    this.setState({
-      resetTile: null,
-    });
-
-    this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
+  componentDidMount() {
+    document.addEventListener('mousemove', this.mousemove.bind(this));
+    document.addEventListener('touchmove', this.mousemove.bind(this), false);
   }
 
-  onBoardTouchMove(event, domElement) {
-    this.setState({
-      resetTile: null,
-    });
+  componentWillUnmount() {
+    document.removeEventListener('mousemove', this.mousemove.bind(this));
+    document.removeEventListener('touchmove', this.mousemove.bind(this));
+  }
+
+  onBoardTouchOrMouseMove(event, domElement) {
+    if (this.state.resetTile) {
+      this.setState({
+        resetTile: null,
+      });
+    }
 
     this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
   }
@@ -45,22 +49,17 @@ export default class BoardView extends React.Component {
         that.state.board.tiles = newTiles;
         that.setState({
           board: that.state.board,
-          fromTile: fromTile,
-          toTile: toTile,
         });
 
         if (that.state.board.hasWon()) {
-          that.setState({
-            hasWon: true,
-            showLevel: true,
-          });
-
           that.state.level = that.state.level + 1;
           that.state.board.tiles = that.state.board.initializeLevel(that.state.level);
 
           that.setState({
             board: that.state.board,
             level: that.state.level,
+            hasWon: true,
+            showLevel: true,
           });
         }
       } else {
@@ -94,10 +93,6 @@ export default class BoardView extends React.Component {
     }
   }
 
-  componentDidMount() {
-    document.addEventListener('mousemove', this.mousemove.bind(this));
-  }
-
   onLevelClick() {
     this.setState({
       showLevel: !this.state.showLevel,
@@ -121,21 +116,19 @@ export default class BoardView extends React.Component {
     const tiles = this.state.board.tiles.filter(function(tile) {
       return tile.value !== 0;
     }).map(function(tile) {
-      let animatingTile;
+      let resetTile;
       if (tile === that.state.resetTile) {
-        animatingTile = tile;
+        resetTile = tile;
       }
 
       return (
         <TileView tile={tile}
-          animatingTile={animatingTile}
-          onBoardMouseMove={that.onBoardMouseMove.bind(that)}
-          onBoardTouchMove={that.onBoardTouchMove.bind(that)}
-          onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)}
-          tileMoving={false}
           key={tile.id}
+          resetTile={resetTile}
           mousemoveEvent={that.state.mousemoveEvent}
-          width={that.state.board.CELL_WIDTH} />
+          width={that.state.board.CELL_WIDTH}
+          onBoardTouchOrMouseMove={that.onBoardTouchOrMouseMove.bind(that)}
+          onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)} />
       );
     });
 
@@ -168,6 +161,7 @@ export default class BoardView extends React.Component {
       level: 1,
       showLevel: false,
       mousemoveEvent: null,
+      hasWon: false,
     };
   }
 }
