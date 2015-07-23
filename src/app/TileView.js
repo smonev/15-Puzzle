@@ -8,9 +8,12 @@ export default class TileView extends React.Component {
   static propTypes = {
     tile: React.PropTypes.any.isRequired,
     resetTile: React.PropTypes.any,
+    hasMoved: React.PropTypes.bool.isRequired,
+    hasWon: React.PropTypes.bool.isRequired,
     mousemoveEvent: React.PropTypes.any,
     width: React.PropTypes.number.isRequired,
     onBoardTouchOrMouseMove: React.PropTypes.func.isRequired,
+    onBoardTouchOrMoveStart: React.PropTypes.func.isRequired,
     onBoardTouchOrMoveEnd: React.PropTypes.func.isRequired,
   }
 
@@ -19,6 +22,16 @@ export default class TileView extends React.Component {
   }
 
   shouldComponentUpdate(newProps, newState) {
+    if (
+        (!this.state.tileMoving) &&
+        (
+          (newProps.hasWon) ||
+          (newProps.hasMoved)
+        )
+    ) {
+      return true;
+    }
+
     if (
         (!this.state.tileMoving) &&
 
@@ -45,12 +58,11 @@ export default class TileView extends React.Component {
 
     classArray.push('tile' + this.props.tile.value);
     classArray.push('position_' + tile.row + '_' + tile.column);
-    if (tile.value === '') {
-      classArray.push('empty');
-    }
+    // if (tile.value === '') {
+    //   classArray.push('empty');
+    // }
 
     let classes = classNames.apply(null, classArray);
-    let tileCaption = tile.value !== 'a' ? tile.value : '';
     let margin = Math.round(this.props.width / 8);
 
     const TILE_FULL_WIDTH = (this.props.width + margin * 2);
@@ -88,7 +100,7 @@ export default class TileView extends React.Component {
                 width: this.props.width + 'px',
                 height: this.props.width + 'px',
                 margin: margin + 'px',
-                // color: '#' + Math.random().toString().substring(2, 8),
+                //color: '#' + Math.random().toString().substring(2, 8),
                 transform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
                 zIndex: this.state.tileMoving ? 1100 : 1,
               }}
@@ -101,7 +113,7 @@ export default class TileView extends React.Component {
               onMouseUp={this.handleTileTouchOrMoveEnd.bind(this)}
               onTouchEnd={this.handleTileTouchOrMoveEnd.bind(this)}
 
-              key={tile.id}>{tileCaption}
+              key={tile.id}>{tile.value}
               </span>
             );
         }}
@@ -138,6 +150,8 @@ export default class TileView extends React.Component {
     this.setState({
         tileMouseDown: true,
     });
+
+    this.props.onBoardTouchOrMoveStart();
   }
 
   handleTileTouchOrMoveEnd(event) {
