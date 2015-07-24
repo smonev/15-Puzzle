@@ -101,7 +101,19 @@ export default class TileView extends React.Component {
                 height: this.props.width + 'px',
                 margin: margin + 'px',
                 // color: '#' + Math.random().toString().substring(2, 8),
-                transform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+
+                // transform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+                // WebkitTransform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+                // MozTransform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+                // OTransform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+                // msTransform: 'translate(' + x.left.val + 'px, ' + x.top.val + 'px)  translateZ(0)',
+
+                transform: 'translate3d(' + x.left.val + 'px, ' + x.top.val + 'px, 0)',
+                WebkitTransform: 'translate3d(' + x.left.val + 'px, ' + x.top.val + 'px, 0)',
+                MozTransform: 'translate3d(' + x.left.val + 'px, ' + x.top.val + 'px, 0)',
+                OTransform: 'translate3d(' + x.left.val + 'px, ' + x.top.val + 'px, 0)',
+                msTransform: 'translate3d(' + x.left.val + 'px, ' + x.top.val + 'px, 0)',
+
                 zIndex: this.state.tileMoving ? 1100 : 1,
               }}
               onMouseDown={this.handleTileTouchOrMoveStart.bind(this)}
