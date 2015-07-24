@@ -27,6 +27,8 @@ export default class BoardView extends React.Component {
     }
 
     this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
+
+    event.stopPropagation();
   }
 
   onBoardTouchOrMoveStart() {
@@ -34,6 +36,8 @@ export default class BoardView extends React.Component {
       hasMoved: false,
       hasWon: false,
     });
+
+    event.stopPropagation();
   }
 
   onBoardTouchOrMoveEnd(event, domElement, fromTile) {
@@ -138,7 +142,7 @@ export default class BoardView extends React.Component {
           hasWon={that.state.hasWon}
           hasMoved={that.state.hasMoved}
           onBoardTouchOrMouseMove={that.onBoardTouchOrMouseMove.bind(that)}
-          onBoardTouchOrMoveStart={that.onBoardTouchOrMoveStart.bind(that)} 
+          onBoardTouchOrMoveStart={that.onBoardTouchOrMoveStart.bind(that)}
           onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)} />
       );
     });
@@ -163,6 +167,7 @@ export default class BoardView extends React.Component {
     this.setState({
       mousemoveEvent: event, // Whole event? hmm
     });
+    event.stopPropagation();
   }
 
   constructor() {

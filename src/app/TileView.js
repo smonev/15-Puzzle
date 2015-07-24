@@ -146,12 +146,14 @@ export default class TileView extends React.Component {
     this.board = document.querySelectorAll('#boardDiv')[0];
   }
 
-  handleTileTouchOrMoveStart() {
+  handleTileTouchOrMoveStart(event) {
     this.setState({
         tileMouseDown: true,
     });
 
     this.props.onBoardTouchOrMoveStart();
+
+    event.stopPropagation();
   }
 
   handleTileTouchOrMoveEnd(event) {
@@ -161,6 +163,8 @@ export default class TileView extends React.Component {
     });
 
     this.props.onBoardTouchOrMoveEnd(event, this, this.props.tile);
+
+    event.stopPropagation();
   }
 
   handleTileTouchOrMouseMove(event) {
@@ -188,5 +192,7 @@ export default class TileView extends React.Component {
       this.props.tile.startY = touchOrMouseClientY - this.board.offsetTop - this.props.width / 2;
       this.props.onBoardTouchOrMouseMove(event, this);
     }
+
+    event.stopPropagation();
   }
 }
