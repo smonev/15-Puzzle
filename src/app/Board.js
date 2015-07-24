@@ -82,8 +82,8 @@ export default class Board {
       this.cells[r] = [];
       for (let c = 0; c < this.size; c++) {
         counter = counter + 1;
-        let tile = new Tile(counter < 16 ? counter : '');
-        this.cells[r][c] = tile;
+        let cell = new Tile(counter, counter < 16 ? counter : '');
+        this.cells[r][c] = cell;
         this.tiles.push(this.cells[r][c]);
       }
     }
