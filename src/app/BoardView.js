@@ -71,6 +71,8 @@ export default class BoardView extends React.Component {
             board: that.state.board,
             level: that.state.level,
             hasWon: true,
+            tileBackgroundColor: that.chooseTileBackgroundColor(),
+            tileRadius: that.chooseTileRadius(),
             showLevel: true,
           });
         }
@@ -141,6 +143,8 @@ export default class BoardView extends React.Component {
           width={that.state.board.CELL_WIDTH}
           hasWon={that.state.hasWon}
           hasMoved={that.state.hasMoved}
+          tileBackgroundColor={that.state.tileBackgroundColor}
+          tileRadius={that.state.tileRadius}
           onBoardTouchOrMouseMove={that.onBoardTouchOrMouseMove.bind(that)}
           onBoardTouchOrMoveStart={that.onBoardTouchOrMoveStart.bind(that)}
           onBoardTouchOrMoveEnd={that.onBoardTouchOrMoveEnd.bind(that)} />
@@ -170,6 +174,18 @@ export default class BoardView extends React.Component {
     event.stopPropagation();
   }
 
+  chooseTileBackgroundColor() {
+    const colors = ['8bc34a', 'ffeb3b', 'ffc107', 'ff5722', 'e91e63', '259b24', 'cddc39', 'ff9800', 'e51c23', '9c27b0', '3f51b5', '03a9f4', '00bcd4', '607d8b', '673ab7', '5677fc', '009688', '795548'];
+    return '#' + colors[Math.floor(Math.random() * colors.length)];
+  }
+
+  chooseTileRadius() {
+    let maximum = 50;
+    let minimum = 0;
+    let randomnumber = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+    return randomnumber + '%';
+  }
+
   constructor() {
     super();
     this.state = {
@@ -179,6 +195,8 @@ export default class BoardView extends React.Component {
       mousemoveEvent: null,
       hasWon: false,
       hasMoved: false,
+      tileBackgroundColor: this.chooseTileBackgroundColor(),
+      tileRadius: this.chooseTileRadius(),
     };
   }
 }

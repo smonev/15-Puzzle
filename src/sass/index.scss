@@ -36,7 +36,6 @@ body {
   font-weight: bold;
   text-align: center;
   vertical-align: middle;
-  /*border-radius: 10%;*/
   color: #000;
   z-index: 110;
 }
@@ -44,7 +43,6 @@ body {
 .tile {
   position: absolute;
   cursor: pointer;
-  background: purple;
   color: white;
 
   &.empty {
