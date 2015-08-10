@@ -25,8 +25,7 @@ export default class LevelView extends React.Component {
               height: x.val + baseWidth + 'px',
               lineHeight: x.val + baseWidth + 'px',
               fontSize: x.val + (baseWidth / 2) + 'px',
-              zIndex: 10,
-              overflow: 'hidden',
+              display: that.props.showLevel ? 'block' : 'none',
             };
 
 
