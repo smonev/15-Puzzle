@@ -16,7 +16,7 @@ var output = {
 var assetsLoaders = [
   {
     test: /\.scss$/,
-    loader: 'style!css!sass',
+    loader: 'style!css!sass!autoprefixer',
   },
   {test: /\.css$/, loader: 'style!css?sourceMap'},
   {test: /\.json$/, loader: 'json'},
