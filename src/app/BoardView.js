@@ -27,8 +27,6 @@ export default class BoardView extends React.Component {
     }
 
     this.state.board.checkForCollision(domElement.props.tile, this.onHoverWhileMoving);
-
-    event.stopPropagation();
   }
 
   onBoardTouchOrMoveStart() {
@@ -36,8 +34,6 @@ export default class BoardView extends React.Component {
       hasMoved: false,
       hasWon: false,
     });
-
-    event.stopPropagation();
   }
 
   onBoardTouchOrMoveEnd(event, domElement, fromTile) {
@@ -167,11 +163,11 @@ export default class BoardView extends React.Component {
   }
 
   mousemove(event) {
+    event.stopPropagation();
     event.preventDefault();
     this.setState({
       mousemoveEvent: event, // Whole event? hmm
     });
-    event.stopPropagation();
   }
 
   chooseTileBackgroundColor() {

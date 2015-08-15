@@ -142,11 +142,11 @@ export default class TileView extends React.Component {
     return {
       left: {
         val: left,
-        config: [500, 20],
+        config: [500, 20], // [] to disable
       },
       top: {
         val: top,
-        config: [500, 20],
+        config: [500, 20], // [] to disable
       },
     };
   }
@@ -163,27 +163,30 @@ export default class TileView extends React.Component {
   }
 
   handleTileTouchOrMoveStart(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
     this.setState({
         tileMouseDown: true,
     });
 
     this.props.onBoardTouchOrMoveStart();
-
-    event.stopPropagation();
   }
 
   handleTileTouchOrMoveEnd(event) {
+    event.stopPropagation();
+    event.preventDefault();
+
     this.setState({
         tileMoving: false,
         tileMouseDown: false,
     });
 
     this.props.onBoardTouchOrMoveEnd(event, this, this.props.tile);
-
-    event.stopPropagation();
   }
 
   handleTileTouchOrMouseMove(event) {
+    event.stopPropagation();
     event.preventDefault();
 
     let handleEvent = true;
@@ -208,7 +211,5 @@ export default class TileView extends React.Component {
       this.props.tile.startY = touchOrMouseClientY - this.board.offsetTop - this.props.width / 2;
       this.props.onBoardTouchOrMouseMove(event, this);
     }
-
-    event.stopPropagation();
   }
 }
