@@ -1,14 +1,14 @@
 import Tile from './Tile';
 
-const SIZE = 4;
+const ANSWER = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, '']];
 
 export default class Board {
 
   calcCellWidth() {
     if (window.innerWidth > window.innerHeight) {
-      return Math.round(window.innerHeight / (SIZE + 2));
+      return Math.round(window.innerHeight / (ANSWER.length + 3));
     } else {
-      return Math.round(window.innerWidth / (SIZE + 2));
+      return Math.round(window.innerWidth / (ANSWER.length + 3));
     }
   }
 
@@ -65,8 +65,7 @@ export default class Board {
   constructor() {
     this.tiles = [];
     this.cells = [];
-    this.size = SIZE;
-    this.answer = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, ''];
+    this.answer = ANSWER;
 
     this.CELL_WIDTH = this.calcCellWidth();
     this.CELL_PADDING = Math.random(this.CELL_WIDTH / 7);
@@ -78,9 +77,9 @@ export default class Board {
 
   addTilesAndCells() {
     let counter = 0;
-    for (let r = 0; r < this.size; r++) {
+    for (let r = 0; r < this.answer.length; r++) {
       this.cells[r] = [];
-      for (let c = 0; c < this.size; c++) {
+      for (let c = 0; c < this.answer.length; c++) {
         counter = counter + 1;
         let cell = new Tile(counter, counter < 16 ? counter : '');
         this.cells[r][c] = cell;
@@ -152,8 +151,8 @@ export default class Board {
   hasWon() {
     let that = this;
     let won = true;
-    this.tiles.forEach(function(tile, i) {
-      won = won && that.answer[i] === tile.value;
+    this.tiles.forEach(function(tile) {
+      won = won && that.answer[tile.row][tile.column] === tile.value;
     });
 
     return won;
