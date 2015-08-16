@@ -8,6 +8,7 @@ export default class TileView extends React.Component {
   static propTypes = {
     tile: React.PropTypes.any.isRequired,
     resetTile: React.PropTypes.any,
+    dimension: React.PropTypes.any.isRequired,
     hasMoved: React.PropTypes.bool.isRequired,
     hasWon: React.PropTypes.bool.isRequired,
     tileBackgroundColor: React.PropTypes.any,
@@ -68,16 +69,20 @@ export default class TileView extends React.Component {
     let margin = Math.round(this.props.width / 8);
 
     const TILE_FULL_WIDTH = (this.props.width + margin * 2);
-    const TABLE_FULL_HEIGHT = (4 * TILE_FULL_WIDTH);
+    const TILE_FULL_HEIGHT = (this.props.width + margin * 2);
 
-    let left = tile.column * TILE_FULL_WIDTH;
-    let top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
+    const TABLE_FULL_WIDTH = this.props.dimension.x * TILE_FULL_WIDTH;
+    const TABLE_FULL_HEIGHT = this.props.dimension.y * TILE_FULL_HEIGHT;
+
+    let left = tile.column * TILE_FULL_WIDTH - TABLE_FULL_WIDTH;
+    let top = tile.row * TILE_FULL_HEIGHT - TABLE_FULL_HEIGHT;
+
 
     if (this.state.tileMoving) {
       if (!this.props.mousemoveEvent) {
-        // console.log('hmm'); // we should never end here
-        left = tile.column * TILE_FULL_WIDTH;
-        top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
+        console.log('hmm we should never end here');
+        // left = tile.column * TILE_FULL_WIDTH;
+        // top = tile.row * TILE_FULL_WIDTH - TABLE_FULL_HEIGHT;
       } else {
         let touchOrMouseClientX = this.props.mousemoveEvent.touches ? this.props.mousemoveEvent.touches[0].clientX : this.props.mousemoveEvent.clientX;
         let touchOrMouseClientY = this.props.mousemoveEvent.touches ? this.props.mousemoveEvent.touches[0].clientY : this.props.mousemoveEvent.clientY;
