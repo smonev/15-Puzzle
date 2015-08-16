@@ -1,6 +1,7 @@
 import React from 'react';
 
-import Board from './Board';
+import Board15 from './games/Board15';
+// import AbcBoard from './games/AbcBoard';
 import Cell from './Cell';
 import LevelView from './Level';
 import TileView from './TileView';
@@ -37,47 +38,21 @@ export default class BoardView extends React.Component {
   }
 
   onBoardTouchOrMoveEnd(event, domElement, fromTile) {
-    const that = this;
-
     this.state.board.checkForCollision(domElement.props.tile, function(toTile) {
-      let newTiles;
-      if (typeof toTile !== 'undefined') {
-        newTiles = this.move(fromTile, toTile);
-        that.setState({
-          resetTile: null,
-        });
-      } else {
-        that.setState({
-          resetTile: fromTile,
-        });
-      }
-
+      let newTiles = this.state.board.move(fromTile, toTile);
       if (typeof newTiles !== 'undefined') {
-        that.state.board.tiles = newTiles;
-        that.setState({
-          board: that.state.board,
+        this.state.board.tiles = newTiles;
+        this.setState({
+          board: this.state.board,
           hasMoved: true,
         });
-
-        if (that.state.board.hasWon()) {
-          that.state.level = that.state.level + 1;
-          that.state.board.tiles = that.state.board.initializeLevel(that.state.level);
-
-          that.setState({
-            board: that.state.board,
-            level: that.state.level,
-            hasWon: true,
-            tileBackgroundColor: that.chooseTileBackgroundColor(),
-            tileRadius: that.chooseTileRadius(),
-            showLevel: true,
-          });
-        }
+        this.checkForWin();
       } else {
-        that.setState({
+        this.setState({
           resetTile: fromTile,
         });
       }
-    });
+    }.bind(this));
 
     let hovered = document.querySelector('.hovered');
     if (hovered !== null) {
@@ -111,16 +86,23 @@ export default class BoardView extends React.Component {
 
   render() {
     const that = this;
+    let result;
     const cells = this.state.board.cells.map(function(row, i) {
-      return (
-              <div key={i}>
-                {row.map(
-                  function(item, j) {
-                    return <Cell width={that.state.board.CELL_WIDTH} key={j} />;
-                  }
-                )}
-              </div>
-            );
+      if (row.length) {
+        result = (
+                <div key={i}>
+                  {row.map(
+                    function(item, j) {
+                      return <Cell width={that.state.board.CELL_WIDTH} key={j} />;
+                    }
+                  )}
+                </div>
+              );
+      } else {
+        result = <Cell width={that.state.board.CELL_WIDTH} key={i} />;
+      }
+
+      return result;
     });
 
     const tiles = this.state.board.tiles.filter(function(tile) {
@@ -135,6 +117,7 @@ export default class BoardView extends React.Component {
         <TileView tile={tile}
           key={tile.id}
           resetTile={resetTile}
+          dimension={that.state.board.dimension}
           mousemoveEvent={that.state.mousemoveEvent}
           width={that.state.board.CELL_WIDTH}
           hasWon={that.state.hasWon}
@@ -150,7 +133,7 @@ export default class BoardView extends React.Component {
     return (
       <div className="board" tabIndex="1">
         <LevelView
-          level={that.state.level}
+          level={that.state.board.level}
           tileWidth={that.state.board.CELL_WIDTH}
           hasWon={that.state.hasWon}
           showLevel={that.state.showLevel}
@@ -160,6 +143,21 @@ export default class BoardView extends React.Component {
         {tiles}
       </div>
     );
+  }
+
+  checkForWin() {
+    if (this.state.board.hasWon()) {
+      this.state.board.tiles = this.state.board.initializeLevel(this.state.board.level);
+      this.state.board.level = this.state.board.level + 1;
+
+      this.setState({
+        board: this.state.board,
+        hasWon: true,
+        tileBackgroundColor: this.chooseTileBackgroundColor(),
+        tileRadius: this.chooseTileRadius(),
+        showLevel: true,
+      });
+    }
   }
 
   mousemove(event) {
@@ -184,9 +182,10 @@ export default class BoardView extends React.Component {
 
   constructor() {
     super();
+
     this.state = {
-      board: new Board(),
-      level: 1,
+      board: new Board15(),
+      // board: new AbcBoard(),
       showLevel: false,
       mousemoveEvent: null,
       hasWon: false,

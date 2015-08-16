@@ -1,8 +1,15 @@
-import Tile from './Tile';
+import Tile from '../Tile';
 
 const ANSWER = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, '']];
 
 export default class Board {
+
+  level = 1;
+
+  dimension = {
+    x: 0,
+    y: 4,
+  }
 
   calcCellWidth() {
     if (window.innerWidth > window.innerHeight) {
@@ -128,10 +135,6 @@ export default class Board {
       if (detected) {
         break;
       }
-    }
-
-    if (!detected) {
-      callback.call(this);
     }
   }
 
