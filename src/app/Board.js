@@ -6,9 +6,9 @@ export default class Board {
 
   calcCellWidth() {
     if (window.innerWidth > window.innerHeight) {
-      return Math.round(window.innerHeight / (ANSWER.length + 3));
+      return Math.round(window.innerHeight / (ANSWER.length + 2));
     } else {
-      return Math.round(window.innerWidth / (ANSWER.length + 3));
+      return Math.round(window.innerWidth / (ANSWER.length + 2));
     }
   }
 
